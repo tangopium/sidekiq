@@ -13,14 +13,16 @@ module Sidekiq
 
       # Allow sidekiq-web extensions to add locale paths
       # so extensions can be localized
+      puts "=== settings.locales ==="
+      pp settings.locales
+      
       @strings[lang] ||= settings.locales.each_with_object({}) do |path, global|
+        puts "=== find_locale_files ==="
+        pp find_locale_files(lang)
+      
         find_locale_files(lang).each do |file|
-          puts "Processing file: #{file}"
-          elapsed_time = Benchmark.realtime do
-            strs = YAML.safe_load(File.read(file))
-            global.merge!(strs[lang])
-          end
-          puts "Time taken: #{elapsed_time.round(4)} seconds"
+          strs = YAML.safe_load(File.read(file))
+          global.merge!(strs[lang])
         end
       end
     end
